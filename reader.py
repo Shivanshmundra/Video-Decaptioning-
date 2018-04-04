@@ -23,7 +23,7 @@ def read_and_decode(filename_queue, batch_size):
         'height': tf.FixedLenFeature([], tf.int64),
         'width': tf.FixedLenFeature([], tf.int64),
         'depth': tf.FixedLenFeature([], tf.int64),
-        'image_raw_i': tf.FixedLenFeature([], tf.string)
+        'image_raw_i': tf.FixedLenFeature([], tf.string),
         'image_raw_o': tf.FixedLenFeature([], tf.string)
         })
 
