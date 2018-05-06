@@ -23,7 +23,7 @@ flags.DEFINE_integer("decay_step", 5000000, "Decay step of learning rate in epoc
 flags.DEFINE_float("decay_rate", 0.8, "Decay rate of learning rate")
 flags.DEFINE_float("eps", 1e-5, "Epsilon")
 flags.DEFINE_float("var", 1e-5, "Variance")
-flags.DEFINE_float("gpu_frac", 0.96, "Gpu fraction")
+flags.DEFINE_float("gpu_frac", 0.95, "Gpu fraction")
 flags.DEFINE_integer("no_of_samples", 50,
                      "no of samples for each noise vector Z during policy gradient")
 flags.DEFINE_boolean("teacher_forcing", False,
@@ -32,7 +32,7 @@ flags.DEFINE_boolean("label_to_disc", True,
                      "True if labels are passed to the discriminator")
 flags.DEFINE_boolean("conditional", True,
                      "True if want to train conditional GAN")
-flags.DEFINE_integer("pre_train_iters", 1000,
+flags.DEFINE_integer("pre_train_iters", 2000,
                       "Number of iterations to pre-train D")
 flags.DEFINE_integer("num_keypoints", 68,
                       "Number of keypoints extracted in the face")
@@ -69,10 +69,10 @@ flags.DEFINE_boolean("gauss_noise", False, "True for adding noise to disc input"
 flags.DEFINE_boolean("flip_label", False, "True for flipping the labels")
 flags.DEFINE_boolean("error_conceal", False, "True for flipping the labels")
 flags.DEFINE_boolean("siamese_net", False, "True for flipping the labels")
-flags.DEFINE_boolean("use_tfrecords", True, "True for running error concealment part")
+flags.DEFINE_boolean("use_tfrecords", False, "True for running error concealment part")
 flags.DEFINE_boolean("vgg_loss", False, "True for taking loss on VGG feature maps")
 
-flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
+flags.DEFINE_integer("batch_size", 1, "The size of batch images [64]")
 flags.DEFINE_integer("z_dim", 100, "Dimension of latent vector.")
 flags.DEFINE_integer("sampleInterval", 500, "Dimension of latent vector.")
 flags.DEFINE_integer("saveInterval", 2000, "Dimension of latent vector.")
@@ -80,7 +80,6 @@ flags.DEFINE_integer("saveInterval", 2000, "Dimension of latent vector.")
 flags.DEFINE_integer("c_dim", 3, "Number of channels in input image")
 flags.DEFINE_boolean("is_grayscale", False, "True for grayscale image")
 flags.DEFINE_integer("output_size", 128, "True for grayscale image")
-# flags.DEFINE_integer("lambda_feat", 1e0, "lambda for vgg loss")
 
 
 FLAGS = flags.FLAGS
@@ -101,7 +100,8 @@ def main(_):
     
     with tf.Session(config = tf.ConfigProto(gpu_options=gpu_options)) as sess:
         dcgan = DCGAN(sess)
-        dcgan.train_unet()
+        dcgan.predict()
+        # dcgan.predict_video()
 
 
 if __name__ == '__main__':

@@ -139,3 +139,32 @@ def transform(image, npx=128, is_crop=False):
 
 def inverse_transform(images):
     return (images + 1.) / 2.
+
+at_index = 0
+def yield_batch(self):
+
+    im_dir = './test_images/'
+    out_dir = './out_images'        
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    self.data = os.listdir(im_dir)
+
+    self.num_batches =  len(filelist)// F.batch_size
+    with self.data.begin(write=False) as txn:
+        cursor = txn.cursor()
+        examples = 0
+        batch = []
+        for key, val in cursor:
+            img = np.fromstring(val, dtype=np.uint8)
+            img = cv2.imdecode(img, 1)
+            img = transform(img)
+            batch.append(img)
+            examples += 1
+
+
+            if examples >= F.batch_size:
+                batch = np.asarray(batch)[:, :, :, [2, 1, 0]]
+                return batch
+                batch = []
+                examples = 0
+        #at_index += F.batch_size

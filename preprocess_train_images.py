@@ -1,20 +1,21 @@
-from __future__ import absolute_import
+# from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 import argparse
 import os
 import sys
-import dlib
+#import dlib
 import glob
-import h5py
-from skimage import io
+#import h5py
+#from skimage import io
 import time
 import numpy as np
 import collections
 from imutils import face_utils
-import cv2
-from scipy.misc import imsave, imresize
+#import cv2
+#from scipy.misc import imsave, imresize
+from moviepy.editor import *
 
 import tensorflow as tf
 
@@ -28,81 +29,70 @@ def _int64_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
-def convert_to(images,  name):
+def convert_to(im_i, im_o, name):
     """Converts a dataset to tfrecords."""
-    rows = images.shape[1]
-    cols = images.shape[2]
-    depth = images.shape[3]
+    rows = im_i.shape[1]
+    cols = im_i.shape[2]
+    depth = im_i.shape[3]
 
     filename = os.path.join(save_path, name + '.tfrecords')
     print('Writing', filename)
     writer = tf.python_io.TFRecordWriter(filename)
 
-    for index in range(images.shape[0]):
-        image_raw = images[index].tostring()
+    for index in range(im_i.shape[0]):
+        image_raw_i = im_i[index].tostring()
+        image_raw_o = im_o[index].tostring()
 
         example = tf.train.Example(features=tf.train.Features(feature={
             'height': _int64_feature(rows),
             'width': _int64_feature(cols),
             'depth': _int64_feature(depth),
-            'image_raw': _bytes_feature(image_raw)}))
-        
+            'image_raw_i': _bytes_feature(image_raw_i),
+            'image_raw_o': _bytes_feature(image_raw_o)}))
+
         writer.write(example.SerializeToString())
 
     writer.close()
 
 if __name__ =='__main__':
-    if len(sys.argv) != 2:
-        print(
-            
-            " python prepare_bb_land.py  shape_predictor_68_face_landmarks.dat "
-            "You can download a trained facial shape predictor from:\n"
-            "    http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2")
-        exit()
-
-    predictor_path = sys.argv[1]
-    
     save_path = 'train_records/'
     
-    detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor(predictor_path)
-    images_dir_path = '../../PreGan/data/data/celebA/img_align_celeba/'
+    imp_path = '../Inpaintin/train/X/'
+    out_path = '../Inpaintin/train/Y/'
 
-    face_image_list = os.listdir(images_dir_path)  # dir of extracted faces
+    face_image_list = os.listdir(imp_path)  # dir of extracted faces
     counter = 0
-
-    image_list = []
+    ilist = os.listdir(imp_path)
+    olist = [x.replace('X', 'Y') for x in ilist]
     tfrecord_ind = 0
+    il = []
+    ol = []
+    # print ('1')
 
-    for imgs in face_image_list:
+    for im in range(len(ilist)):
+        # print ('2')
         counter += 1
-
-        filename = os.path.join(images_dir_path, imgs) 
-          
-        img = io.imread(filename)
-        arr = np.array(img) 
-        H, W, C = arr.shape   # we assume that we are getting face cropped images
-
-        # Ask the detector to find the bounding boxes of each face. The 1 in the
-        # second argument indicates that we should upsample the image 1 time. This
-        # will make everything bigger and allow us to detect more faces.
-        dets = detector(img, 1)
-        #print("Number of faces detected: {}".format(len(dets)))
+        video_i = VideoFileClip(imp_path + ilist[im])
+        video_o = VideoFileClip(out_path + olist[im])
         
-        for k, d in enumerate(dets):
-            # Get the landmarks/parts for the face in box d.
-            shape = predictor(img, d)
-            shape = face_utils.shape_to_np(shape)
-            try:
-                face_part = img[d.top():d.bottom(), d.left():d.right()]
-                # print (face_part.shape)
-                face_part = imresize(face_part, (128,128, 3))
-                image_list.append(face_part)
-            except:
-                continue
-            if len(image_list) == 10000:
-                convert_to(np.asarray(image_list), 'celebA_' + str(tfrecord_ind))
-                image_list = []
-                tfrecord_ind += 1
-        
-    convert_to(np.asarray(image_list), 'celebA_' + str(tfrecord_ind))
+
+        # print ('2')
+        f_ri =  [x for x in video_i.iter_frames()]
+        f_ro =  [x for x in video_o.iter_frames()]
+
+
+        # print ('3')
+        for x in range(0, len(f_ri), 15):
+            # print (f_ri[x].shape)
+            if f_ri[x].shape == (128, 128,3):
+                # print('here')
+                il.append(f_ri[x])
+                ol.append(f_ro[x])
+
+        if len(il) > 10000:
+            convert_to(np.asarray(il), np.asarray(ol), 'I_O'  + str(tfrecord_ind)) 
+            il, ol = [], []
+            tfrecord_ind += 1
+      
+    convert_to(np.asarray(il), np.asarray(ol), 'I_O'  + str(tfrecord_ind))  
+    # convert_to(np.asarray(image_list), 'celebA_' + str(tfrecord_ind))
