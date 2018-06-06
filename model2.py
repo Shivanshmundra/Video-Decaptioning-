@@ -172,7 +172,7 @@ class DCGAN(object):
                 # Update D network
                 iters = 1
 
-                if epoch < 1000: 
+                if False: 
                 #print('Train D net')
                 # print('training disc')
                   train_summary, _,  ulossf = self.sess.run(
@@ -182,28 +182,28 @@ class DCGAN(object):
 
 
 
-
-                if epoch > 1000: 
+                if True:
+                # if epoch > 10000: 
                   #print('Train D net')
                   # print('training disc')
                   train_summary, _,  dlossf = self.sess.run(
-                      [self.summary_op, d_optim,  self.d_loss_fake],
-                      feed_dict={global_step: epoch})
+                      [self.summary_op, d_optim,  self.d_loss],
+                      feed_dict={global_step: epoch, self.is_training: True})
                 writer.add_summary(train_summary, counter)
                  
                  
 
                 # Update G network
                 iters = 1
-                if epoch >= 1000 :
+                if True :
                    # print('training generator')
                    # sample_z_gen = np.random.uniform(self.ra, self.rb,
                    #      [F.batch_size, F.z_dim]).astype(np.float32)
                    #print('Train G Net')
-                   train_summary, _,  gloss, dloss = self.sess.run(
-                        [self.summary_op, g_optim, self.d_loss],
-                        feed_dict={
-                                    global_step: epoch})
+                   train_summary, _,   gloss = self.sess.run(
+                        [self.summary_op, g_optim, self.g_loss_actual],
+                        feed_dict={global_step: epoch, self.is_training: True})
+                                    
                 writer.add_summary(train_summary, counter)
                   
 
@@ -216,7 +216,7 @@ class DCGAN(object):
 
                 counter += 1
                 idx += 1
-                if epoch >= 1000:                
+                if True:                
                   print(("Epoch:[%2d]  d_loss_f:%.8f d_loss_r:%.8f " +
                         "g_loss_act:%.2f ")
                         % (epoch,  errD_fake,
@@ -227,7 +227,7 @@ class DCGAN(object):
                       # sample_z_gen = np.random.uniform(self.ra, self.rb, [F.batch_size, F.z_dim]).astype(np.float32)
                       samples, d_loss, g_loss_actual = self.sess.run(
                           [self.G_mean, self.d_loss, self.g_loss_actual],
-                          feed_dict={self.z_gen: sample_z_gen}
+                          feed_dict={self.is_training: False}
                       )
                       save_images(samples, [8, 8],
                                   F.sample_dir + "/sample.png")
@@ -243,15 +243,16 @@ class DCGAN(object):
                     print("Checkpoint saved")
                 
                 # sample_z_gen = np.random.uniform(self.ra, self.rb, [F.batch_size, F.z_dim]).astype(np.float32)
-                if epoch > 1000:
+                if True:
                   samples, d_loss, g_loss_actual = self.sess.run(
-                      [self.G_mean, self.d_loss, self.g_loss_actual],                      
+                      [self.G_mean, self.d_loss, self.g_loss_actual],
+                      feed_dict={self.is_training: False}                     
                   )
                   save_images(samples, [8, 8],
                               F.sample_dir + "/train_{:03d}.png".format(epoch))
                 else:
                   samples, g_loss_actual = self.sess.run(
-                    [self.G_mean, self.g_loss_actual], feed_dict={self.is_training: True})
+                    [self.G_mean, self.g_loss_actual], feed_dict={self.is_training: False})
                   save_images(samples, [8, 8],
                               F.sample_dir + "/train_{:03d}.png".format(epoch))
 
@@ -268,7 +269,7 @@ class DCGAN(object):
 
     def discriminator(self, image_model, image_real, reuse=False):
         # print('entered discriminator')
-        print(image_model.shape, image_real.shape)
+        # print(image_model.shape, image_real.shape)
         image = tf.concat([image_model, image_real], 3)
         with tf.variable_scope('d'):
             dim = 64

@@ -25,7 +25,7 @@ flags.DEFINE_integer("decay_step", 500000, "Decay step of learning rate in epoch
 flags.DEFINE_float("decay_rate", 0.8, "Decay rate of learning rate")
 flags.DEFINE_float("eps", 1e-5, "Epsilon")
 flags.DEFINE_float("var", 1e-5, "Variance")
-flags.DEFINE_float("gpu_frac", 0.96, "Gpu fraction")
+flags.DEFINE_float("gpu_frac", 0.99, "Gpu fraction")
 flags.DEFINE_integer("no_of_samples", 50,
                      "no of samples for each noise vector Z during policy gradient")
 flags.DEFINE_boolean("teacher_forcing", False,

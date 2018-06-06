@@ -17,7 +17,7 @@ flags.DEFINE_float("learning_rate_D", 0.0002,
                    "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("learning_rate_G", 0.0002,
                    "Learning rate of for adam [0.0002]")
-flags.DEFINE_float("learning_rate_U", 0.0002,
+flags.DEFINE_float("learning_rate_U", 0.001,
                    "Learning rateof for adam [0.0002]")
 flags.DEFINE_float("beta1D", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("beta1G", 0.5, "Momentum term of adam [0.5]")
@@ -25,7 +25,7 @@ flags.DEFINE_integer("decay_step", 500000, "Decay step of learning rate in epoch
 flags.DEFINE_float("decay_rate", 0.8, "Decay rate of learning rate")
 flags.DEFINE_float("eps", 1e-5, "Epsilon")
 flags.DEFINE_float("var", 1e-5, "Variance")
-flags.DEFINE_float("gpu_frac", 0.98, "Gpu fraction")
+flags.DEFINE_float("gpu_frac", 0.96, "Gpu fraction")
 flags.DEFINE_integer("no_of_samples", 50,
                      "no of samples for each noise vector Z during policy gradient")
 flags.DEFINE_boolean("teacher_forcing", False,

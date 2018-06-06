@@ -118,7 +118,7 @@ class DCGAN(object):
             # self.loss += tf.reduce_mean(tf.square(vgg_net['relu3_3'][:F.batch_size] - vgg_net['relu3_3'][F.batch_size:]))# + \
                         # tf.reduce_mean(tf.square(vgg_net[:F.batch_size] - vgg_net[F.batch_size:]))
         else:
-            self.loss += (tf.reduce_sum(tf.square(self.output - self.images_o)) + (0.05*tf.reduce_sum(tf.image.total_variation(self.output))))
+            self.loss += (tf.reduce_sum(tf.square(self.output - self.images_o)) + (0.01*tf.reduce_sum(tf.image.total_variation(self.output))))
             #self.loss = tf.reduce_sum(tf.image.total_variation(self.output))
             # self.loss += tf.reduce_sum(tf.square(self.output - self.images_o))
 
@@ -264,7 +264,7 @@ class DCGAN(object):
               
                # resnet structure adopted from srgan
               n = h4
-              for i in range(4):
+              for i in range(8):
                   nn = lrelu(batch_norm(name='u_resb_1_' + str(i))(conv2d(n, dim * 16, 3, 3,d_h=1, d_w=1, name='u_res_conv_1' + str(i)), self.is_training))
                   nn = lrelu(batch_norm(name='u_resb_2_' + str(i))(conv2d(nn, dim * 16, 3, 3,d_h=1, d_w=1, name='u_res_conv_2'+ str(i)), self.is_training))
                   nn = tf.add(n, nn, name='res_add' + str(i))
