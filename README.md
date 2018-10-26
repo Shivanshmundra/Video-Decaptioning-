@@ -15,3 +15,7 @@ This is repository for Track2 of Chalearn LAP Inpainting Competition - Video dec
   - Specify source destination of test videos(with subtitles) in `model.py` (currently it is `~/Inpaintin/dev/X`)
   - Output videos will be stored in folder named `out_video` with name changed as `'X'` will be replaced by `'Y'` in name.
 
+# Sample result from testing
+![Video with captions](https://user-images.githubusercontent.com/25545489/47575607-1cea3900-d960-11e8-802e-8d7d6ae07c44.gif)
+  
+![Video without captions](https://user-images.githubusercontent.com/25545489/47575681-3e4b2500-d960-11e8-8517-b275d54dfca4.gif)
